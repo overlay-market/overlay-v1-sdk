@@ -118,8 +118,7 @@ export abstract class OVLCollateral {
         const positionIds = options.positionIds.map(id => id)
         const values = options.values.map(val => val)
 
-        let calldata: string
-        calldata = OVLCollateral.INTERFACE.encodeFunctionData(
+        return OVLCollateral.INTERFACE.encodeFunctionData(
             'safeBatchTransferFrom', [ 
                 operator, 
                 senders, 
