@@ -70,7 +70,7 @@ export interface ERC1155PermitOptions {
     spender: string
 }
 
-export abstract class OverlayV1OVLCollateral extends SelfPermit {
+export abstract class OVLCollateral extends SelfPermit {
 
     private constructor () { super() }
 

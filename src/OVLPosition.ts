@@ -1,19 +1,21 @@
 import { 
-    BigintIsh, 
-    MaxUint256, 
-    Percent, 
-    Price, 
     CurrencyAmount, 
     Token 
 } from '@uniswap/sdk-core'
+import {
+    OVLCollateral
+} from './OverlayV1OVLCollateral'
+import {
+    UniswapV3Market
+} from './OverlayV1UniswapV3Market'
 import Big from 'big.js'
 import invariant from 'tiny-invariant'
-import { ZERO } from '../internalConstants'
+import { ZERO, TWO } from './constants'
 
 
 interface PositionConstructorArgs {
-    collateralManager: CollateralManager
-    market: Market
+    OVLCollateral: OVLCollateral
+    market: UniswapV3Market
     collateral: Big
     isLong: boolean
     leverage: number
@@ -23,17 +25,17 @@ interface PositionConstructorArgs {
     priceEntry: Big
 }
   
-export class Position {
+export class OVLPosition {
 
-    public readonly collateralManager: CollateralManager
-    public readonly market: Market
-    public readonly collateral: CurrencyAmount<Token> | null = null
-    public readonly leverage: number | null = null
-    public readonly isLong: boolean | null = null
-    public readonly cost: Big | null = null
-    public readonly debt: Big | null = null
-    public readonly oiShares: Big | null = null
-    public readonly priceEntry: Big | null = null
+    public readonly OVLCollateral: OVLCollateral
+    public readonly market: UniswapV3Market
+    public readonly collateral: CurrencyAmount<Token>
+    public readonly leverage: number 
+    public readonly isLong: boolean
+    public readonly cost: Big
+    public readonly debt: Big
+    public readonly oiShares: Big
+    public readonly priceEntry: Big
   
     /**
      * Constructs a position for a given pool with the given liquidity
@@ -43,7 +45,7 @@ export class Position {
      * @param tickUpper The upper tick of the position
      */
     public constructor({ 
-        collateralManager, 
+        OVLCollateral, 
         market,
         collateral, 
         leverage, 
@@ -54,7 +56,7 @@ export class Position {
         priceEntry
     }: PositionConstructorArgs) {
   
-      this.collateralManager = collateralManager
+      this.OVLCollateral = OVLCollateral
       this.market = market
       this.collateral = collateral
       this.leverage = leverage
@@ -115,7 +117,7 @@ export class Position {
         totalOi: Big,
         totalOiShares: Big,
         priceExit: Big
-    ): Big {
+    ): boolean {
 
         const oi = this.oi(totalOi, totalOiShares)
 
@@ -124,12 +126,12 @@ export class Position {
         if (this.isLong) {
 
             return oi.times(priceFrame)
-                .lessThan(this.debt)
+                .lt(this.debt)
 
         } else {
 
             return oi.times(priceFrame).plus(this.debt)
-                .lessThan(oi.times(Big(2)))
+                .lt(oi.times(Big(2)))
 
         }
 
@@ -155,11 +157,11 @@ export class Position {
 
         const value = this.value(totalOi, totalOiShares, priceExit)
 
-        if (value.equals(Big(0))) return Big.BigInt(Number.MAX_SAFE_INTEGER);
+        if (value.eq(Big(0))) return Big(Number.MAX_SAFE_INTEGER);
 
         const notional = this.notional(totalOi, totalOiShares, priceExit)
 
-        return notional.divdBy(value)
+        return notional.div(value)
     }
 
     public openMargin (
@@ -170,7 +172,7 @@ export class Position {
 
         const notional = this.notional(totalOi, totalOiShares, priceExit)
 
-        if (notional.equal(ZERO)) return ZERO
+        if (notional.eq(ZERO)) return ZERO
 
         const value = this.value(totalOi, totalOiShares, priceExit)
 
@@ -183,15 +185,15 @@ export class Position {
         totalOiShares: Big,
         priceExit: Big,
         marginMaintenance: Big
-    ): Big {
+    ): boolean {
 
         const value = this.value(totalOi, totalOiShares, priceExit)
 
-        const initialOi = this.initialOi()
+        const initialOi = this.initialOi
 
         const maintenanceMargin = initialOi.times(marginMaintenance)
 
-        return value.isLessThan(maintenanceMargin)
+        return value.lt(maintenanceMargin)
 
     }
 
@@ -203,11 +205,11 @@ export class Position {
 
         const oi = this.oi(totalOi, totalOiShares)
 
-        const initialOi = this.initialOi()
+        const initialOi = this.initialOi
 
         const oiFrame = initialOi
             .times(marginMaintenance)
-            .plus(this.debt)
+            .plus(this.debt )
             .div(oi)
 
         if (this.isLong) return this.priceEntry.times(oiFrame)
