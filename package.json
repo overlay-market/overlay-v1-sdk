@@ -8,15 +8,15 @@
   "description": "⚒️ An SDK for building applications on top of OverlayV1",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "module": "dist/overlay-v1-sdk.esm.js",
   "files": [
     "dist"
   ],
   "repository": "https://github.com/overlay-market/overlay-v1-sdk",
   "keywords": [
-    "uniswap",
+    "overlay",
     "ethereum"
   ],
-  "module": "dist/overlay-v1-sdk.esm.js",
   "scripts": {
     "build": "tsdx build",
     "start": "tsdx watch",
@@ -26,12 +26,12 @@
   "dependencies": {
     "@ethersproject/abi": "^5.0.12",
     "@ethersproject/solidity": "^5.0.9",
-    "@types/big.js": "^6.1.2",
     "big.js": "^6.1.1",
     "tiny-invariant": "^1.1.0",
     "tiny-warning": "^1.0.3"
   },
   "devDependencies": {
+    "@types/big.js": "^6.1.2",
     "@types/jest": "^24.0.25",
     "tsdx": "^0.14.1"
   },
