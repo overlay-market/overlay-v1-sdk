@@ -1,10 +1,10 @@
 {
-  "name": "@uniswap/overlay-v1-sdk",
+  "name": "@overlay-market/overlay-v1-sdk",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
   },
-  "version": "3.5.1",
+  "version": "0.0.1",
   "description": "⚒️ An SDK for building applications on top of OverlayV1",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
