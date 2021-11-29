@@ -1,17 +1,18 @@
 import {
     validateAndParseAddress,
 } from './utils/validateAndParseAddress'
+import { BigNumber } from '@ethersproject/bignumber'
 import { Interface } from '@ethersproject/abi'
 import { abi } from './abis/OverlayV1OVLCollateral.json'
 // import { PermitOptions, SelfPermit } from './selfPermit'
 import Big from 'big.js'
 
 export interface UnwindSpecificOptions {
-    shares: Big // the amount of position shares to unwind
+    shares: BigNumber         // the amount of position shares to unwind
 }
 
 export interface CommonExitOptions {
-    positionId: Big // the id of position to liquidate
+    positionId: number        // the id of position to liquidate
 }
 
 export type LiquidateOptions = CommonExitOptions
@@ -20,11 +21,11 @@ export type UnwindOptions = CommonExitOptions & UnwindSpecificOptions
 
 export interface BuildOptions {
     market: string             // the market to create a position on
-    leverage: Big              // leverage to take out position with
-    collateral: Big            // OVL amount to take out position with
+    leverage: number           // leverage to take out position with
+    collateral: BigNumber      // OVL amount to take out position with
     isLong: boolean            // to take the short or the long side
     slippageTolerance: number  // amount of market impact to allow
-    deadline: Big              // time when position expires
+    deadline: number           // time when position expires
 }
 
 export interface SafeTransferOptions {
@@ -61,16 +62,32 @@ export abstract class OVLCollateral {
     // private constructor () { super() }
     private constructor () { }
 
-    public static buildParameters(options: BuildOptions): string {
+    public static buildParameters({ collateral, leverage, market, isLong }: BuildOptions): string {
 
-        return OVLCollateral.INTERFACE.encodeFunctionData(
-            'build', [
-                validateAndParseAddress(options.market),
-                options.collateral,
-                options.leverage,
-                options.isLong
-            ])
+        try {
 
+            console.log('change')
+
+            console.log("collateral", collateral)
+            console.log("leverage", leverage)
+            console.log("market v ", validateAndParseAddress(market))
+            console.log("isLong", isLong)
+
+            return OVLCollateral.INTERFACE.encodeFunctionData(
+                'build', [
+                    validateAndParseAddress(market),
+                    collateral.toHexString(),
+                    leverage,
+                    isLong
+                ])
+
+        } catch (e) {
+
+            console.log("EEEEEE", e)
+
+        }
+
+        return "glob"
 
     }
 
