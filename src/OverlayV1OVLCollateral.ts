@@ -2,6 +2,7 @@ import {
     validateAndParseAddress,
 } from './utils/validateAndParseAddress'
 import { Interface } from '@ethersproject/abi'
+import { BigNumber } from '@ethersproject/bignumber'
 import { abi } from './abis/OverlayV1OVLCollateral.json'
 // import { PermitOptions, SelfPermit } from './selfPermit'
 import Big from 'big.js'
@@ -63,6 +64,8 @@ export abstract class OVLCollateral {
 
     public static buildParameters(options: BuildOptions): string {
 
+        console.log('BigNumberish log: ', BigNumber.from('4'))
+        
         return OVLCollateral.INTERFACE.encodeFunctionData(
             'build', [
                 validateAndParseAddress(options.market),
