@@ -24,7 +24,7 @@ export interface BuildOptions {
     leverage: number           // leverage to take out position with
     collateral: BigNumber      // OVL amount to take out position with
     isLong: boolean            // to take the short or the long side
-    slippageTolerance: number  // amount of market impact to allow
+    minOI: number  // amount of market impact to allow
     deadline: number           // time when position expires
 }
 
@@ -62,32 +62,23 @@ export abstract class OVLCollateral {
     // private constructor () { super() }
     private constructor () { }
 
-    public static buildParameters({ collateral, leverage, market, isLong }: BuildOptions): string {
 
-        try {
+    public static sanity () {
 
-            console.log('change')
+        console.log("sanitized")
 
-            console.log("collateral", collateral)
-            console.log("leverage", leverage)
-            console.log("market v ", validateAndParseAddress(market))
-            console.log("isLong", isLong)
+    }
 
-            return OVLCollateral.INTERFACE.encodeFunctionData(
-                'build', [
-                    validateAndParseAddress(market),
-                    collateral.toHexString(),
-                    leverage,
-                    isLong
-                ])
+    public static buildParameters({ collateral, leverage, market, isLong, minOI }: BuildOptions): string {
 
-        } catch (e) {
-
-            console.log("EEEEEE", e)
-
-        }
-
-        return "glob"
+        return OVLCollateral.INTERFACE.encodeFunctionData(
+            'build', [
+                validateAndParseAddress(market),
+                collateral.toHexString(),
+                leverage,
+                isLong,
+                minOI
+            ])
 
     }
 
